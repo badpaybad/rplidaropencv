@@ -80,7 +80,7 @@ u_result capture_and_display(RPlidarDriver *drv)
             // we will show object scaned by lidar arount 1000 mili met
             int mapW = 1000;
             int mapH = 1000;
-            
+
             float x, y = 0;
             float newX = mapW / 2;
             float newY = mapH / 2;
@@ -88,11 +88,6 @@ u_result capture_and_display(RPlidarDriver *drv)
 
             for (int pos = 0; pos < (int)count; ++pos)
             {
-                // printf("%s theta: %03.2f Dist: %08.2f \n",
-                //        (nodes[pos].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ? "S " : "  ",
-                //        (nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f,
-                //        nodes[pos].distance_q2 / 4.0f);
-
                 float tmpDis = nodes[pos].distance_q2 / 4.0f;
                 float tmpAng = (nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f;
                 if (tmpDis > 0.0f && tmpDis <= newX)
@@ -107,7 +102,6 @@ u_result capture_and_display(RPlidarDriver *drv)
                         data_lidar[pos][1] = tmpDis;
                         data_lidar[pos][2] = x;
                         data_lidar[pos][3] = y;
-                        //    std::cout << "data_lidar [" << pos << "] =" << tmpAng << "\t" << tmpDis << "\t" << x << "\t" << y << "\n";
                     }
                     else if (tmpAng > 90 && tmpAng <= 180)
                     {
@@ -119,7 +113,6 @@ u_result capture_and_display(RPlidarDriver *drv)
                         data_lidar[pos][1] = tmpDis;
                         data_lidar[pos][2] = x;
                         data_lidar[pos][3] = y;
-                        //   std::cout << "data_lidar [" << pos << "] =" << tmpAng << "\t" << tmpDis << "\t" << x << "\t" << y << "\n";
                     }
                     else if (tmpAng > 180 && tmpAng <= 270)
                     {
@@ -131,7 +124,6 @@ u_result capture_and_display(RPlidarDriver *drv)
                         data_lidar[pos][1] = tmpDis;
                         data_lidar[pos][2] = x;
                         data_lidar[pos][3] = y;
-                        //   std::cout << "data_lidar [" << pos << "] =" << tmpAng << "\t" << tmpDis << "\t" << x << "\t" << y << "\n";
                     }
                     else
                     {
@@ -143,14 +135,12 @@ u_result capture_and_display(RPlidarDriver *drv)
                         data_lidar[pos][1] = tmpDis;
                         data_lidar[pos][2] = x;
                         data_lidar[pos][3] = y;
-                        //     std::cout << "data_lidar [" << pos << "] =" << tmpAng << "\t" << tmpDis << "\t" << x << "\t" << y << "\n";
                     }
 
                     disTb += tmpDis;
                 }
             }
 
-            //   std::cout << "\r\n _min " << min << " _max " << max << "\r\n";
             int data_lidar_len = _countof(data_lidar);
 
             disTb = disTb / data_lidar_len;
@@ -198,12 +188,13 @@ u_result capture_and_display(RPlidarDriver *drv)
 
                 std::cout << "\r\nx: " << x << " y: " << y << " dis: " << d << " a: " << a;
 
+                //object scaned by lidar position
                 cv::line(image, Point(x, y), Point(x + 2, y + 2), Scalar(0, 0, 255), 2, 8);
             }
 
+            //the lidar position
             cv::line(image, Point(newX, newY), Point(newX + 2, newY + 2), Scalar(0, 255, 255), 2, 8);
 
-            // Draw a rectangle ( 5th argument is not -ve)
             cv::rectangle(image, Point(left, top), Point(right, bottom), Scalar(255, 0, 0), 2, 4);
 
             //cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
