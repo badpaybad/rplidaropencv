@@ -21,6 +21,12 @@ install driver for window
 
                 you may find in device manager: Silicon Labs CP210x USB to UART Bridge (COM6)
 
+we use git path cloned for CMakeLists.txt 
+
+                MY_VCPKG_INSTALLED_DIR
+
+                SDK_RPLIDAR_DIR
+
 
 # run or debug in vs code
 
