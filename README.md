@@ -29,4 +29,23 @@ find you COM port then replace in main.cpp  Window:  opt_com_path = "\\\\.\\COM6
                 cmake -B build -S .
                 cmake --build build
 
+                
+
+# rplidar.png
+
+how to convert from angle and distance to x,y 
+
+                O.x=0 ; O.y=0 ; // the lidar 
+                A.x= cos((90 - tmpAng) * pi / 180) * tmpDis;
+                A.y= cos(tmpAng * pi / 180) * tmpDis;
+
+                if we want draw image from O1 so O1.x=0, O1.y=0 
+                thus now O.x= 1000; O.y=1000
+
+                A.x1 = O.x + std::abs(x);
+                A.y1 = O.y - std::abs(y);
+
+                ....
                 check function: capture_and_display
+
+
