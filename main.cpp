@@ -81,13 +81,20 @@ u_result capture_and_display(RPlidarDriver *drv)
             int mapW = 1000;
             int mapH = 1000;
 
-            float x, y = 0;
-            float newX = mapW / 2;
-            float newY = mapH / 2;
-            float disTb = 0;
+            int x, y = 0;
+            int newX = mapW / 2;
+            int newY = mapH / 2;
 
-            for (int pos = 0; pos < (int)count; ++pos)
+            //the lidar
+            data_lidar[0][0] = 0;
+            data_lidar[0][1] = 0;
+            data_lidar[0][2] = newX;
+            data_lidar[0][3] = newY;
+
+            for (int posNext = 1; posNext < (int)count; ++posNext)
             {
+                int pos = posNext - 1;
+
                 float tmpDis = nodes[pos].distance_q2 / 4.0f;
                 float tmpAng = (nodes[pos].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f;
                 if (tmpDis > 0.0f && tmpDis <= newX)
@@ -136,14 +143,10 @@ u_result capture_and_display(RPlidarDriver *drv)
                         data_lidar[pos][2] = x;
                         data_lidar[pos][3] = y;
                     }
-
-                    disTb += tmpDis;
                 }
             }
 
             int data_lidar_len = _countof(data_lidar);
-
-            disTb = disTb / data_lidar_len;
 
             int ratio = 1;
 
@@ -153,15 +156,35 @@ u_result capture_and_display(RPlidarDriver *drv)
             // Create black empty images
             cv::Mat image = cv::Mat::zeros(mapW, mapH, CV_8UC3);
 
+            //the lidar position
+            cv::putText(image,                                                              //target image
+                        "lidar: x=" + std::to_string(newX) + ", y=" + std::to_string(newY), //text
+                        cv::Point(25, 25),                                                  //top-left position
+                        cv::FONT_HERSHEY_PLAIN,
+                        0.9,
+                        CV_RGB(255, 255, 0), //font color
+                        2);
+
             //cv::line(image, Point(0, 0), Point(2000, 2000), Scalar(0, 255, 0), 5, 8);
             // Draw a line
+
+            float near_by[5000][4];
+            int counter_nearby = 0;
+            int nearbyx = 0;
+            int nearbyy = 0;
             int left = 0, top = 0, right = 0, bottom = 0;
+
+            float disTb = 0;
+
             for (int pos = 0; pos < (int)data_lidar_len; ++pos)
             {
                 int a = data_lidar[pos][0];
                 int d = data_lidar[pos][1];
                 int x = data_lidar[pos][2];
                 int y = data_lidar[pos][3];
+
+                if (x == 0 && y == 0)
+                    continue;
 
                 if (x < 0 || y < 0)
                     continue;
@@ -175,6 +198,44 @@ u_result capture_and_display(RPlidarDriver *drv)
                     top = y;
                     right = x;
                     bottom = y;
+
+                    nearbyx = x;
+                    nearbyy = y;
+                    near_by[counter_nearby][0] = a;
+                    near_by[counter_nearby][1] = d;
+                    near_by[counter_nearby][2] = x;
+                    near_by[counter_nearby][3] = y;
+
+                    counter_nearby++;
+                    disTb = disTb + d;
+                }
+                else
+                {
+                    if (x > nearbyx - 20 && x < nearbyx + 20 && y > nearbyy - 20 && y < nearbyy + 20)
+                    {
+                    }
+                    else
+                    {
+                        nearbyx = x;
+                        nearbyy = y;
+                        near_by[counter_nearby][0] = a;
+                        near_by[counter_nearby][1] = d;
+                        near_by[counter_nearby][2] = x;
+                        near_by[counter_nearby][3] = y;
+
+                        counter_nearby++;
+
+                        cv::line(image, Point(newX + 2, newY + 2), Point(x, y), Scalar(255, 0, 255), 1, 8);
+
+                        cv::putText(image,                     //target image
+                                    std::to_string(d),         //text
+                                    cv::Point(x + 15, y + 15), //top-left position
+                                    cv::FONT_HERSHEY_PLAIN,
+                                    0.8,
+                                    CV_RGB(255, 0, 255), //font color
+                                    2);
+                        disTb = disTb + d;
+                    }
                 }
 
                 if (left > x)
@@ -192,10 +253,25 @@ u_result capture_and_display(RPlidarDriver *drv)
                 cv::line(image, Point(x, y), Point(x + 2, y + 2), Scalar(0, 0, 255), 2, 8);
             }
 
-            //the lidar position
-            cv::line(image, Point(newX, newY), Point(newX + 2, newY + 2), Scalar(0, 255, 255), 2, 8);
+            // int near_by_len = _countof(near_by);
 
-            cv::rectangle(image, Point(left, top), Point(right, bottom), Scalar(255, 0, 0), 2, 4);
+            // for (int pos = 0; pos < (int)near_by_len; ++pos)
+            // {
+            //     int a = data_lidar[pos][0];
+            //     int d = data_lidar[pos][1];
+            //     int x = data_lidar[pos][2];
+            //     int y = data_lidar[pos][3];
+
+            //     cv::line(image, Point(newX, newX), Point(newX + 2, newY + 2), Scalar(0, 255, 255), 2, 8);
+
+            // }
+
+            disTb = disTb / counter_nearby;
+
+            cv::circle(image, Point(newX, newY), disTb, Scalar(255, 255, 255), 1);
+            cv::line(image, Point(newX, newY), Point(newX + 2, newY + 2), Scalar(0, 255, 255), 2, 8);
+            cv::circle(image, Point(newX, newY), newX, Scalar(255, 255, 255), 1);
+            //cv::rectangle(image, Point(left, top), Point(right, bottom), Scalar(255, 0, 0), 2, 4);
 
             //cv::rotate(image, image, cv::ROTATE_90_CLOCKWISE);
 
