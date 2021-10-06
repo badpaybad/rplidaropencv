@@ -157,13 +157,8 @@ u_result capture_and_display(RPlidarDriver *drv)
             cv::Mat image = cv::Mat::zeros(mapW, mapH, CV_8UC3);
 
             //the lidar position
-            cv::putText(image,                                                              //target image
-                        "lidar: x=" + std::to_string(newX) + ", y=" + std::to_string(newY), //text
-                        cv::Point(25, 25),                                                  //top-left position
-                        cv::FONT_HERSHEY_PLAIN,
-                        0.9,
-                        CV_RGB(255, 255, 0), //font color
-                        2);
+            cv::putText(image,
+                        "lidar: x=" + std::to_string(newX) + ", y=" + std::to_string(newY), cv::Point(25, 25), cv::FONT_HERSHEY_PLAIN, 0.9, CV_RGB(255, 255, 0), 2);
 
             //cv::line(image, Point(0, 0), Point(2000, 2000), Scalar(0, 255, 0), 5, 8);
             // Draw a line
@@ -227,13 +222,16 @@ u_result capture_and_display(RPlidarDriver *drv)
 
                         cv::line(image, Point(newX + 2, newY + 2), Point(x, y), Scalar(255, 0, 255), 1, 8);
 
-                        cv::putText(image,                     //target image
-                                    std::to_string(d),         //text
-                                    cv::Point(x + 15, y + 15), //top-left position
-                                    cv::FONT_HERSHEY_PLAIN,
-                                    0.8,
-                                    CV_RGB(255, 0, 255), //font color
-                                    2);
+                        cv::putText(image, std::to_string(d), cv::Point(x + 15, y + 15), cv::FONT_HERSHEY_PLAIN, 0.8, CV_RGB(255, 0, 255), 2);
+
+                        // cv::putText(image,
+                        //             "x=" + std::to_string(x) + ", y=" + std::to_string(x),
+                        //             cv::Point(x + 50, y + 15),
+                        //             cv::FONT_HERSHEY_PLAIN,
+                        //             0.8,
+                        //             CV_RGB(255, 0, 255),
+                        //             2);
+
                         disTb = disTb + d;
                     }
                 }
