@@ -55,11 +55,12 @@ void print_usage(int argc, const char *argv[])
 
 u_result capture_and_display(RPlidarDriver *drv)
 {
+    const int maxPoints=8192;
     float pi = 3.1416f;
-    float data_lidar[5000][4];
+    float data_lidar[maxPoints][4];
     u_result ans;
 
-    rplidar_response_measurement_node_t nodes[8192];
+    rplidar_response_measurement_node_t nodes[maxPoints];
     size_t count = _countof(nodes);
 
     // printf("waiting for data...\n");
@@ -78,8 +79,12 @@ u_result capture_and_display(RPlidarDriver *drv)
         {
             //rplidar will return distance in mili met
             // we will show object scaned by lidar arount 1000 mili met
-            int mapW = 1000;
-            int mapH = 1000;
+            int mapW = 10000;
+            int mapH = 10000;
+            int ratio = 10;
+            
+            // Create black empty images
+            cv::Mat image = cv::Mat::zeros(mapW/ratio, mapH/ratio, CV_8UC3);
 
             int x, y = 0;
             int newX = mapW / 2;
@@ -148,13 +153,8 @@ u_result capture_and_display(RPlidarDriver *drv)
 
             int data_lidar_len = _countof(data_lidar);
 
-            int ratio = 1;
-
             newX = newX / ratio;
             newY = newY / ratio;
-
-            // Create black empty images
-            cv::Mat image = cv::Mat::zeros(mapW, mapH, CV_8UC3);
 
             //the lidar position
             cv::putText(image,
@@ -163,7 +163,7 @@ u_result capture_and_display(RPlidarDriver *drv)
             //cv::line(image, Point(0, 0), Point(2000, 2000), Scalar(0, 255, 0), 5, 8);
             // Draw a line
 
-            float near_by[5000][4];
+            float near_by[maxPoints][4];
             int counter_nearby = 0;
             int nearbyx = 0;
             int nearbyy = 0;
@@ -264,7 +264,7 @@ u_result capture_and_display(RPlidarDriver *drv)
 
             // }
 
-            disTb = disTb / counter_nearby;
+            disTb = (disTb / counter_nearby)/ratio;
 
             cv::circle(image, Point(newX, newY), disTb, Scalar(255, 255, 255), 1);
             cv::line(image, Point(newX, newY), Point(newX + 2, newY + 2), Scalar(0, 255, 255), 2, 8);
