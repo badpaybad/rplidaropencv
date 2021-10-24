@@ -21,7 +21,7 @@
 #ifndef sys_HlsLfcd2LidarConnector
 #define sys_HlsLfcd2LidarConnector
 
-class HlsLfcd2LidarConnector
+class Lds01LidarConnector
 {
 
 public:
@@ -54,7 +54,18 @@ public:
     int _mapWidth;
     int _mapHeight;
 
-    HlsLfcd2LidarConnector(boost::asio::io_service &io, int scanRadiusMilimet = 5000, float mapRatio = 0.0f, std::string port = "\\\\.\\COM4", uint32_t baud_rate = 230400)
+    /**
+     * @brief Construct a new Hls Lfcd 2 Lidar Connector object
+     * https://emanual.robotis.com/docs/en/platform/turtlebot3/appendix_lds_01/
+     * 
+     * @param io 
+     * @param scanRadiusMilimet 
+     * @param mapRatio 
+     * @param port 
+     * @param baud_rate 
+     */
+
+    Lds01LidarConnector(boost::asio::io_service &io, int scanRadiusMilimet = 5000, float mapRatio = 0.0f, std::string port = "\\\\.\\COM4", uint32_t baud_rate = 230400)
         : serial_(io, port)
     {
         shutting_down_ = false;
@@ -82,8 +93,9 @@ public:
         std::cout << "\r\nLidar init " << port_ << " " << std::to_string(baud_rate_);
     }
 
-    ~HlsLfcd2LidarConnector()
-    {
+    ~Lds01LidarConnector()
+    {        
+        stop();
         boost::asio::write(serial_, boost::asio::buffer("e", 1)); // stop motor
     }
 

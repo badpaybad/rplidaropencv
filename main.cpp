@@ -20,7 +20,7 @@
 #include <boost/array.hpp>
 
 #include "libs/common.h"
-#include "libs/HlsLfcd2LidarConnector.cpp"
+#include "libs/Lds01LidarConnector.cpp"
 #include "libs/MjpegHttpServer.cpp"
 
 int main(int argc, const char *argv[])
@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
     //  auto *lidarConnect = new RplidarConnector();
 
     boost::asio::io_service io;
-    auto *lidarConnect = new HlsLfcd2LidarConnector(io, 5000, 0.0f,opt_com_path);
+    auto *lidarConnect = new Lds01LidarConnector(io, 5000, 0.0f,opt_com_path);
 
     lidarConnect->init(opt_com_path, opt_com_baudrate, 10000);
 
@@ -200,7 +200,6 @@ int main(int argc, const char *argv[])
     //_mjpegServer->Start();
 
     // other logic here
-    cv::Mat imgShow = cv::Mat::zeros(mapW, mapH, CV_8UC3);
 
     while (1)
     {
