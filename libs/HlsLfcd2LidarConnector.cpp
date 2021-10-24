@@ -31,9 +31,9 @@ public:
     uint32_t baud_rate_;              ///< @brief The baud rate for the serial connection
     bool shutting_down_;              ///< @brief Flag for whether the driver is supposed to be shutting down or not
     boost::asio::serial_port serial_; ///< @brief Actual serial port object for reading/writing to the LFCD Laser Scanner
-    uint16_t motor_speed_;
     ///< @brief current motor speed as reported by the LFCD.
-    boost::asio::io_service io_;
+
+    uint16_t motor_speed_;
 
     /**
      * @brief angle, distance

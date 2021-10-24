@@ -47,7 +47,7 @@ int main(int argc, const char *argv[])
     //  auto *lidarConnect = new RplidarConnector();
 
     boost::asio::io_service io;
-    auto *lidarConnect = new HlsLfcd2LidarConnector(io, 5000, 0.0f);
+    auto *lidarConnect = new HlsLfcd2LidarConnector(io, 5000, 0.0f,opt_com_path);
 
     lidarConnect->init(opt_com_path, opt_com_baudrate, 10000);
 
