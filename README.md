@@ -5,9 +5,13 @@ rplidar a1 and opencv
 
 clone to C:/ or / in linux 
 
+                
+
                 git clone https://github.com/Microsoft/vcpkg.git
 
-                vcpkg install opencv
+                set VCPKG_ROOT=%cd%
+                
+                vcpkg install opencv libuv boost-asio uwebsockets
 
 # rplidar sdk
 

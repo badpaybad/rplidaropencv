@@ -17,7 +17,7 @@ if (WIN32)
     endif()
 else()
     set (MY_VCPKG_INSTALLED_DIR "/vcpkg")       
-    set( CMAKE_CXX_FLAGS " -pthread " )  
+    set( CMAKE_CXX_FLAGS " -g -Wall -pthread -lm -lpthread -lX11 -ljpeg -lpng -DDLIB_JPEG_SUPPORT -DDLIB_PNG_SUPPORT" )    
     if(NOT DEFINED VCPKG_TARGET_TRIPLET)
         #set(VCPKG_TARGET_TRIPLET x64-linux)
     endif()
@@ -52,19 +52,24 @@ message("OpenCV_DIR: ${OpenCV_DIR}")
 message("OpenCV_LIBS: ${OpenCV_LIBS}")
 message("")
 
+find_package(Boost REQUIRED )
+message("")
+message("Boost_INCLUDE_DIRS ${Boost_INCLUDE_DIRS}")
+message("Boost_LIBRARIES ${Boost_LIBRARIES}")
+message("")
+
 file (GLOB PRJ_LIBS_SOURCE 
 "libs/*.h"
 "libs/*.cpp"
 )
 
-
-set (SDK_RPLIDAR_DIR "/rplidar_sdk/sdk/sdk")
+set (SDK_RPLIDAR_DIR "/rplidar_sdk/sdk")
 
 set (SDK_RPDIDAR_ARCH_DIR "linux") #linux, macOS, win32
 
 if (WIN32)
     set (SDK_RPDIDAR_ARCH_DIR "win32")    
-    set (SDK_RPLIDAR_DIR "C:/rplidar_sdk/sdk/sdk")
+    set (SDK_RPLIDAR_DIR "C:/rplidar_sdk/sdk")
 endif()
 
 message("SDK_RPLIDAR_DIR: ${SDK_RPLIDAR_DIR}")
@@ -89,19 +94,42 @@ set (PRJ_SDK_RPLIDAR_INCLUDE_DIR
 
 message("PRJ_LIBS_INCLUDE_DIR: ${PRJ_LIBS_INCLUDE_DIR}")
 
+find_path(UWEBSOCKETS_INCLUDE_DIRS "uwebsockets/App.h")
+#find_library(UWEBSOCKETS_LIBS uwebsockets)
+message("UWEBSOCKETS_INCLUDE_DIRS: ${UWEBSOCKETS_INCLUDE_DIRS}")
+message("")
+#https://github.com/uNetworking/uWebSockets/issues/1043
+find_package(ZLIB REQUIRED)
+find_library(USOCKETS_LIB uSockets)
+find_package(unofficial-libuv CONFIG REQUIRED)
+find_library(LIBUV_LIB libuv)
+
+find_package(nlohmann_json CONFIG REQUIRED)
+##target_link_libraries(main PRIVATE nlohmann_json nlohmann_json::nlohmann_json)
+
 #include the subdirectory containing our libs if you subdir have CMakeLists.txt
 #add_subdirectory (libs)
 
-include_directories(libs ${PRJ_SDK_RPLIDAR_INCLUDE_DIR} ${MY_VCPKG_INSTALLED_DIR_INCLUDE} ${OpenCV_DIR})
+set (SHARED_LIBS 
+     ZLIB::ZLIB
+     ${USOCKETS_LIB}
+     ${LIBUV_LIB}   
+     nlohmann_json nlohmann_json::nlohmann_json        
+     Boost::boost
+     #Boost::asio 
+     #dlib::dlib    
+)
+
+include_directories(libs ${PRJ_SDK_RPLIDAR_INCLUDE_DIR} ${MY_VCPKG_INSTALLED_DIR_INCLUDE} ${OpenCV_DIR} ${UWEBSOCKETS_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${DLIBS_INCLUDE_DIR})
 
 add_library (PRJ_LIBS ${PRJ_LIBS_SOURCE} ${PRJ_SDK_RPLIDAR_SOURCE})
 #
 #add_executable(${PROJECT_NAME} libs ${UWEBSOCKETS_INCLUDE_DIRS} "libs/httpserver.cpp" "program.cpp")
 add_executable(${PROJECT_NAME} "main.cpp")
 
-target_link_libraries(PRJ_LIBS ${OpenCV_LIBS})
+target_link_libraries(PRJ_LIBS ${OpenCV_LIBS} ${SHARED_LIBS} ${Boost_LIBRARIES} ${DLIBS_LIB} )
 
-target_link_libraries(${PROJECT_NAME} PRJ_LIBS ${OpenCV_LIBS}  )
+target_link_libraries(${PROJECT_NAME} PRJ_LIBS ${OpenCV_LIBS} ${SHARED_LIBS} ${Boost_LIBRARIES} ${DLIBS_LIB})
 
 #copy custom resources , .dll .so if need
 file(GLOB PRJ_LIBS_HEADERS "libs/*.h")
