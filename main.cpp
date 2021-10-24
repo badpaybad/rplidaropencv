@@ -197,7 +197,7 @@ int main(int argc, const char *argv[])
     std::thread _threadLidar = std::thread([lidarConnect]()
                                            { lidarConnect->start(); });
 
-    //_mjpegServer->Start();
+    _mjpegServer->Start();
 
     // other logic here
 

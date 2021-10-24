@@ -204,7 +204,7 @@ public:
                                 float tmpDis = range;
                                 int tmpAng = index;
 
-                                std::cout << "\r\na: " << std::to_string(tmpAng) << " i: " << std::to_string(intensity) << " r: " << std::to_string(range);
+                                //std::cout << "\r\na: " << std::to_string(tmpAng) << " i: " << std::to_string(intensity) << " r: " << std::to_string(range);
 
                                 // frame[pos] = RplidarPoint(0, 0, 0, 0, 0, 0, range, intensity);
                                 //  frame[pos] = RplidarPoint(x, y, newX, newY, _mapRatio, _scanDiameterMilimet, tmpAng, tmpDis);
