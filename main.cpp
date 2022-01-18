@@ -22,6 +22,7 @@
 #include "libs/common.h"
 #include "libs/Lds01LidarConnector.cpp"
 #include "libs/MjpegHttpServer.cpp"
+//#include "libs/RplidarConnector.cpp"
 
 int main(int argc, const char *argv[])
 {
@@ -36,7 +37,7 @@ int main(int argc, const char *argv[])
         //   print_usage(argc, argv);
 
         //opt_com_path = "\\\\.\\COM4"; // argv[1];//window
-         opt_com_path = "\\\\.\\COM6"; // argv[1];
+         opt_com_path = "\\\\.\\COM4"; // argv[1];
         //  opt_com_path = "/dev/ttyUSB0"; // argv[1];linux
     }
 
@@ -44,12 +45,12 @@ int main(int argc, const char *argv[])
         opt_com_baudrate = strtoul(argv[2], NULL, 10);
 
     // auto *lidarConnect = new SlLidarConnector();
-    //  auto *lidarConnect = new RplidarConnector();
+    // auto *lidarConnect = new RplidarConnector();
 
     boost::asio::io_service io;
     auto *lidarConnect = new Lds01LidarConnector(io, 5000, 0.0f,opt_com_path);
 
-    lidarConnect->init(opt_com_path, opt_com_baudrate, 10000);
+    //lidarConnect->init(opt_com_path, opt_com_baudrate, 10000);
 
     int mapW = lidarConnect->_mapWidth;
     int mapH = lidarConnect->_mapHeight;

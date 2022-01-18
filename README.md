@@ -12,6 +12,7 @@ clone to C:/ or / in linux
                 set VCPKG_ROOT=%cd%
                 
                 vcpkg install opencv libuv boost-asio uwebsockets
+                vcpkg install nlohmann-json
 
 # rplidar sdk
 
